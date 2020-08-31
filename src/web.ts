@@ -1,23 +1,19 @@
-import { WebPlugin } from '@capacitor/core';
-import { NotificationListenerPluginPlugin } from './definitions';
+// import { WebPlugin } from '@capacitor/core';
+// import { NotificationListenerPlugin } from './definitions';
 
-export class NotificationListenerPluginWeb extends WebPlugin implements NotificationListenerPluginPlugin {
-  constructor() {
-    super({
-      name: 'NotificationListenerPlugin',
-      platforms: ['web'],
-    });
-  }
+// export class NotificationListenerPluginWeb extends WebPlugin implements NotificationListenerPlugin {
+//   constructor() {
+//     super({
+//       name: 'NotificationListenerPlugin',
+//       platforms: ['web'],
+//     });
+//   }
+//   async listen(): Promise<void> {}
+// }
 
-  async echo(options: { value: string }): Promise<{ value: string }> {
-    console.log('ECHO', options);
-    return options;
-  }
-}
+// const NotificationListenerPlugin = new NotificationListenerPluginWeb();
 
-const NotificationListenerPlugin = new NotificationListenerPluginWeb();
+// export { NotificationListenerPlugin };
 
-export { NotificationListenerPlugin };
-
-import { registerWebPlugin } from '@capacitor/core';
-registerWebPlugin(NotificationListenerPlugin);
+// import { registerWebPlugin } from '@capacitor/core';
+// registerWebPlugin(NotificationListenerPlugin);
