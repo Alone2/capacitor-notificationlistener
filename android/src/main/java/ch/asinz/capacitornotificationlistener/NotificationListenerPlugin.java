@@ -31,6 +31,9 @@ public class NotificationListenerPlugin extends Plugin {
         if (!hasPermission(Manifest.permission.BIND_NOTIFICATION_LISTENER_SERVICE)) {
             call.reject("No permission");
         }
+        if (notificationreceiver == null) {
+            call.success();
+        }
         notificationreceiver = new NotificationReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction(NotificationService.ACTION_RECEIVE);
@@ -47,6 +50,9 @@ public class NotificationListenerPlugin extends Plugin {
 
     @PluginMethod()
     public void stopListening(PluginCall call) {
+        if (notificationreceiver == null) {
+            call.success();
+        }
         getContext().unregisterReceiver(notificationreceiver);
         call.success();
     }

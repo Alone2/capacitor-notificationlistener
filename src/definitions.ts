@@ -1,4 +1,4 @@
-import { PluginListenerHandle } from "@capacitor/core";
+import { Plugins, PluginListenerHandle } from "@capacitor/core";
 
 declare module '@capacitor/core' {
   interface PluginRegistry {
@@ -15,7 +15,7 @@ export interface SystemNotification {
   package: string;
 }
 
-export interface NotificationListenerPluginPlugin {
+interface NotificationListenerPluginPlugin extends Plugin {
   addListener(
     eventName: "notificationReceivedEvent", 
     listenerFunc: (info: SystemNotification) => void,
@@ -27,4 +27,37 @@ export interface NotificationListenerPluginPlugin {
   startListening() : Promise<void>;
   stopListening() : Promise<void>;
   requestPermission(): Promise<void>;
+}
+
+
+
+const { NotificationListenerPlugin } = Plugins;
+
+class SystemPluginListenerHandler {
+    #pluginListenerHandle : PluginListenerHandle;
+    #onremove : Function;
+    constructor(pl : PluginListenerHandle, func : Function) {
+        this.#pluginListenerHandle = pl;
+        this.#onremove = func;
+    }
+    remove() {
+        this.#onremove();
+        this.#pluginListenerHandle.remove();
+    }
+}
+
+export class SystemNotificationListener extends Plugin {
+  constructor() {
+      super()
+  }
+  addListener(
+    eventName: "notificationRemovedEvent" | "notificationReceivedEvent", 
+    listenerFunc: (info: SystemNotification) => void,
+  ): SystemPluginListenerHandler {
+        NotificationListenerPlugin.startListening();
+        return new SystemPluginListenerHandler(NotificationListenerPlugin.addListener(eventName, listenerFunc), NotificationListenerPlugin.stopListening);
+  }
+  requestPermission() {
+    NotificationListenerPlugin.requestPermission();
+  }
 }
