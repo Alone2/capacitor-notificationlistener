@@ -69,7 +69,7 @@ public class NotificationService extends NotificationListenerService {
     private String[] charSequenceArrayToStringArray(CharSequence[] c) {
         if (c == null) return new String[0];
         String[] out = new String[c.length];
-        for (int i = 0; i < out.length; i++) {
+        for (int i = 0; i < c.length; i++) {
             out[i] = charSequenceToString(c[i]);
         }
         return out;

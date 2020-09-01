@@ -8,11 +8,15 @@ import android.content.IntentFilter;
 import android.provider.Settings;
 import android.util.Log;
 
+import com.getcapacitor.JSArray;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.NativePlugin;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 @NativePlugin(
         permissions = {
@@ -28,12 +32,14 @@ public class NotificationListenerPlugin extends Plugin {
 
     @PluginMethod()
     public void startListening(PluginCall call) {
-        if (!hasPermission(Manifest.permission.BIND_NOTIFICATION_LISTENER_SERVICE)) {
-            call.reject("No permission");
-        }
-        if (notificationreceiver == null) {
+        if (notificationreceiver != null) {
             call.success();
+            return;
         }
+        // if (!hasPermission(Manifest.permission.BIND_NOTIFICATION_LISTENER_SERVICE)) {
+        //     call.reject("No permission");
+        //     return;
+        // }
         notificationreceiver = new NotificationReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction(NotificationService.ACTION_RECEIVE);
@@ -52,6 +58,7 @@ public class NotificationListenerPlugin extends Plugin {
     public void stopListening(PluginCall call) {
         if (notificationreceiver == null) {
             call.success();
+            return;
         }
         getContext().unregisterReceiver(notificationreceiver);
         call.success();
@@ -64,8 +71,11 @@ public class NotificationListenerPlugin extends Plugin {
             try {
                 jo.put("apptitle", intent.getStringExtra(NotificationService.ARG_APPTITLE));
                 jo.put("text", intent.getStringExtra(NotificationService.ARG_TEXT));
-                // doesn't work 'cause no arrays D=
-                jo.put("textlines", intent.getStringArrayExtra(NotificationService.ARG_TEXTLINES));
+                JSONArray ja = new JSONArray();
+                // somehow always empty ? 
+                for (String k : intent.getStringArrayExtra(NotificationService.ARG_TEXTLINES))
+                    ja.put(k);
+                jo.put("textlines", ja.toString());
                 jo.put("title", intent.getStringExtra(NotificationService.ARG_TITLE));
                 jo.put("time", intent.getLongExtra(NotificationService.ARG_TIME, System.currentTimeMillis()));
                 jo.put("package", intent.getStringExtra(NotificationService.ARG_PACKAGE));

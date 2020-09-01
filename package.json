@@ -1,6 +1,6 @@
 {
     "name": "capacitor-notificationlistener",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "description": "Implementation of NotificationListernerService for capacitor",
     "main": "dist/plugin.js",
     "module": "dist/esm/index.js",

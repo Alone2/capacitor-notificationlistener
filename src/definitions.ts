@@ -6,8 +6,17 @@ declare module '@capacitor/core' {
   }
 }
 
+interface PlainSystemNotification {
+  apptitle: string;
+  text: string;
+  textlines: string;
+  title: string;
+  time: number;
+  package: string;
+}
+
 export interface SystemNotification {
-  appname: string;
+  apptitle: string;
   text: string;
   textlines: string[];
   title: string;
@@ -17,45 +26,67 @@ export interface SystemNotification {
 
 interface NotificationListenerPluginPlugin extends Plugin {
   addListener(
-    eventName: "notificationReceivedEvent", 
-    listenerFunc: (info: SystemNotification) => void,
+    eventName: "notificationRemovedEvent",
+    listenerFunc: (info: PlainSystemNotification) => void,
   ): PluginListenerHandle;
   addListener(
-    eventName: "notificationRemovedEvent", 
-    listenerFunc: (info: SystemNotification) => void,
+    eventName: "notificationReceivedEvent",
+    listenerFunc: (info: PlainSystemNotification) => void,
   ): PluginListenerHandle;
-  startListening() : Promise<void>;
-  stopListening() : Promise<void>;
+  startListening(): Promise<void>;
+  stopListening(): Promise<void>;
   requestPermission(): Promise<void>;
 }
 
-
+// ----- 
 
 const { NotificationListenerPlugin } = Plugins;
 
 class SystemPluginListenerHandler {
-    #pluginListenerHandle : PluginListenerHandle;
-    #onremove : Function;
-    constructor(pl : PluginListenerHandle, func : Function) {
-        this.#pluginListenerHandle = pl;
-        this.#onremove = func;
-    }
-    remove() {
-        this.#onremove();
-        this.#pluginListenerHandle.remove();
-    }
+  private pluginListenerHandle: PluginListenerHandle;
+  private onremove: Function;
+  constructor(pl: PluginListenerHandle, func: Function) {
+    this.pluginListenerHandle = pl;
+    this.onremove = func;
+  }
+  remove() {
+    this.onremove();
+    this.pluginListenerHandle.remove();
+  }
 }
 
-export class SystemNotificationListener extends Plugin {
-  constructor() {
-      super()
-  }
+const convert2SystemNotification = (info: PlainSystemNotification) : SystemNotification => {
+  return {
+    apptitle: info.apptitle,
+    text: info.text,
+    textlines: JSON.parse(info.textlines),
+    title: info.title,
+    time: new Date(info.time),
+    package: info.package,
+  };
+}
+
+export class SystemNotificationListener {
   addListener(
-    eventName: "notificationRemovedEvent" | "notificationReceivedEvent", 
+    eventName: "notificationRemovedEvent" | "notificationReceivedEvent",
     listenerFunc: (info: SystemNotification) => void,
   ): SystemPluginListenerHandler {
-        NotificationListenerPlugin.startListening();
-        return new SystemPluginListenerHandler(NotificationListenerPlugin.addListener(eventName, listenerFunc), NotificationListenerPlugin.stopListening);
+
+    NotificationListenerPlugin.startListening();
+    let np: PluginListenerHandle;
+
+    const newfunc = (info: PlainSystemNotification) => { 
+      let inf = convert2SystemNotification(info); 
+      listenerFunc(inf) 
+    }
+
+    if (eventName == "notificationReceivedEvent") {
+      np = NotificationListenerPlugin.addListener("notificationReceivedEvent", newfunc);
+    } else {
+      np = NotificationListenerPlugin.addListener("notificationRemovedEvent", newfunc);
+    }
+
+    return new SystemPluginListenerHandler(np, NotificationListenerPlugin.stopListening);
   }
   requestPermission() {
     NotificationListenerPlugin.requestPermission();
