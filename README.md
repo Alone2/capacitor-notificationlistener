@@ -19,7 +19,7 @@ Add the following to AndroidManifest.xml:
             <intent-filter>
                 <action android:name="android.service.notification.NotificationListenerService" />
             </intent-filter>
-        </service>
+ </service>
 ```
 
 ## Usage
