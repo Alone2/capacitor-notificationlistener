@@ -5,14 +5,14 @@ Observe android notification being posted / removed using this NotificationListe
 ## Installation
 
 ```
-npm install ...
+npm i capacitor-notificationlistener
 npx cap sync
 ```
 
 Register this plugin using  ```add(NotificationListenerPlugin.class)``` in your 'MainActivity.java'
 
 ### Permissions
-Add the following to AndroidManifest.xml:
+Add the following to your AndroidManifest.xml:
 
 ```xml
 <service android:name="ch.asinz.capacitornotificationlistener.NotificationService"
