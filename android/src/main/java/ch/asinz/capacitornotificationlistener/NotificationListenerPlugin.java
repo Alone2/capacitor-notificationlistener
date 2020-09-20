@@ -34,12 +34,9 @@ public class NotificationListenerPlugin extends Plugin {
     public void startListening(PluginCall call) {
         if (notificationreceiver != null) {
             call.success();
+            Log.d(TAG, "NotificationReceiver already exists");
             return;
         }
-        // if (!hasPermission(Manifest.permission.BIND_NOTIFICATION_LISTENER_SERVICE)) {
-        //     call.reject("No permission");
-        //     return;
-        // }
         notificationreceiver = new NotificationReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction(NotificationService.ACTION_RECEIVE);
@@ -52,6 +49,13 @@ public class NotificationListenerPlugin extends Plugin {
     public void requestPermission(PluginCall call) {
         startActivityForResult(call, new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS), 0);
         call.success();
+    }
+
+    @PluginMethod
+    public void isListening(PluginCall call) {
+        JSObject ret = new JSObject();
+        ret.put("value",  NotificationService.isConnected);
+        call.resolve(ret);
     }
 
     @PluginMethod()
@@ -72,7 +76,6 @@ public class NotificationListenerPlugin extends Plugin {
                 jo.put("apptitle", intent.getStringExtra(NotificationService.ARG_APPTITLE));
                 jo.put("text", intent.getStringExtra(NotificationService.ARG_TEXT));
                 JSONArray ja = new JSONArray();
-                // somehow always empty ? 
                 for (String k : intent.getStringArrayExtra(NotificationService.ARG_TEXTLINES))
                     ja.put(k);
                 jo.put("textlines", ja.toString());

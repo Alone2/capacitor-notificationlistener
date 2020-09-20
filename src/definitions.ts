@@ -36,24 +36,12 @@ interface NotificationListenerPluginPlugin extends Plugin {
   startListening(): Promise<void>;
   stopListening(): Promise<void>;
   requestPermission(): Promise<void>;
+  isListening(): Promise< { value: boolean } >;
 }
 
 // ----- 
 
 const { NotificationListenerPlugin } = Plugins;
-
-class SystemPluginListenerHandler {
-  private pluginListenerHandle: PluginListenerHandle;
-  private onremove: Function;
-  constructor(pl: PluginListenerHandle, func: Function) {
-    this.pluginListenerHandle = pl;
-    this.onremove = func;
-  }
-  remove() {
-    this.onremove();
-    this.pluginListenerHandle.remove();
-  }
-}
 
 const convert2SystemNotification = (info: PlainSystemNotification) : SystemNotification => {
   return {
@@ -67,17 +55,18 @@ const convert2SystemNotification = (info: PlainSystemNotification) : SystemNotif
 }
 
 export class SystemNotificationListener {
+  startListening() : Promise<void> {
+    return NotificationListenerPlugin.startListening();
+  }
   addListener(
     eventName: "notificationRemovedEvent" | "notificationReceivedEvent",
     listenerFunc: (info: SystemNotification) => void,
-  ): SystemPluginListenerHandler {
-
-    NotificationListenerPlugin.startListening();
+  ): PluginListenerHandle {
     let np: PluginListenerHandle;
 
     const newfunc = (info: PlainSystemNotification) => { 
       let inf = convert2SystemNotification(info); 
-      listenerFunc(inf) 
+      listenerFunc(inf);
     }
 
     if (eventName == "notificationReceivedEvent") {
@@ -85,10 +74,22 @@ export class SystemNotificationListener {
     } else {
       np = NotificationListenerPlugin.addListener("notificationRemovedEvent", newfunc);
     }
-
-    return new SystemPluginListenerHandler(np, NotificationListenerPlugin.stopListening);
+    return np;
   }
-  requestPermission() {
-    NotificationListenerPlugin.requestPermission();
+  stopListening() : Promise<void> {
+    return NotificationListenerPlugin.stopListening();
+  }
+  requestPermission() : Promise<void> {
+    return NotificationListenerPlugin.requestPermission();
+  }
+  isListening (
+  ) : Promise<boolean> {
+    return new Promise<boolean>((resolve : any, reject : any) => {
+      NotificationListenerPlugin.isListening().then((value : {value : boolean}) => {
+        resolve(value.value);
+      }).catch((reason : any) => {
+        reject(reason);
+      });
+    })
   }
 }
