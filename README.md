@@ -10,15 +10,15 @@ npx cap sync
 ```
 
 Register this plugin using  ```add(NotificationListenerPlugin.class)``` in your ```MainActivity.java``` like in the following example:
-```
-[...]
+```java
+// ... code ...
 import ch.asinz.capacitornotificationlistener.NotificationListenerPlugin;
-[...]
+// ... code ...
     this.init(savedInstanceState, new ArrayList<Class<? extends Plugin>>() {{
       // Put it here!
       add(NotificationListenerPlugin.class);
     }});
-[...]
+// ... code ...
 ```
 ### Permissions
 Add the following, contained in ```<application>```, to your AndroidManifest.xml:
@@ -35,19 +35,19 @@ Add the following, contained in ```<application>```, to your AndroidManifest.xml
 
 ## Usage 
 Import the plugin.
-```javascript
+```typescript
 import { SystemNotification, SystemNotificationListener } from 'capacitor-notificationlistener';
 const sn = new SystemNotificationListener();
 ```
 
 Start listening for notifications. 
-```javascript
+```typescript
 sn.startListening();
 ```
 
 Add a listener for new notifications or the removal of notifications.
 Make sure you have called ```sn.startListening()``` to be able to receive notifications.
-```javascript
+```typescript
 sn.addListener("notificationReceivedEvent", (info: SystemNotification) => {
     // logic ...
 });
@@ -58,7 +58,7 @@ sn.addListener("notificationRemovedEvent", (info: SystemNotification) => {
 
 SystemNotification Interface.
 The anotomy of android notifications is explained [here](https://developer.android.com/guide/topics/ui/notifiers/notifications#Templates).
-```javascript
+```typescript
 interface SystemNotification {
   apptitle: string;     // Title of a notifications' app
   text: string;         // Text of a notification
@@ -72,7 +72,7 @@ interface SystemNotification {
 Check if the App is listening for notifications.
 If it is not, even though ```sn.startListening()``` was called,
 your app doesn't have sufficient permissions to observe notifications.
-```javascript
+```typescript
 sn.isListening().then((value : boolean) => {
     // logic ... 
     // example code:
@@ -84,11 +84,11 @@ sn.isListening().then((value : boolean) => {
 ```
 
 Open settings so that the user can authorize your app.
-```javascript
+```typescript
 sn.requestPermission();
 ```
 
 Stop listening for notifications.
-```javascript
+```typescript
 sn.stopListening();
 ```
