@@ -9,27 +9,19 @@ npm i capacitor-notificationlistener
 npx cap sync
 ```
 
-Register this plugin using  ```add(NotificationListenerPlugin.class)``` in your 'MainActivity.java'
+Register this plugin using  ```add(NotificationListenerPlugin.class)``` in your ```MainActivity.java``` like in the following example:
 ```
-**import ch.asinz.capacitornotificationlistener.NotificationListenerPlugin;**
-
-public class MainActivity extends BridgeActivity {
-  @Override
-  public void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-
-    // Initializes the Bridge
+[...]
+import ch.asinz.capacitornotificationlistener.NotificationListenerPlugin;
+[...]
     this.init(savedInstanceState, new ArrayList<Class<? extends Plugin>>() {{
-      // Additional plugins you've installed go here
-      // Ex: add(TotallyAwesomePlugin.class);
-
+      // Put it here!
       add(NotificationListenerPlugin.class);
     }});
-  }
-}
+[...]
 ```
 ### Permissions
-Add the following to your AndroidManifest.xml:
+Add the following, contained in ```<application>```, to your AndroidManifest.xml:
 
 ```xml
 <service android:name="ch.asinz.capacitornotificationlistener.NotificationService"
@@ -42,7 +34,7 @@ Add the following to your AndroidManifest.xml:
 ```
 
 ## Usage 
-Import the plugin
+Import the plugin.
 ```javascript
 import { SystemNotification, SystemNotificationListener } from 'capacitor-notificationlistener';
 const sn = new SystemNotificationListener();
