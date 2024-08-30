@@ -2,6 +2,10 @@
 
 Observe android notification being posted / removed using this NotificationListenerService wrapper for capacitor.
 
+## DISCLAIMER
+
+This plugin is quite old and untested for newer versions. It will probably not work with current versions of Android.
+
 ## Installation
 
 ```
